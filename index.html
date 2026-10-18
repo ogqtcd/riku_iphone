@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RIKU's iPhone</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 아이폰 프레임 디스플레이 */
+    .iphone-frame {
+      width: 100vw;
+      height: 100vh;
+      max-width: 414px;
+      max-height: 896px;
+      background-color: #000;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    @media (min-width: 500px) {
+      .iphone-frame {
+        border-radius: 50px;
+        height: 852px;
+        border: 12px solid #262626;
+      }
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 30px;
+      background-color: #000;
+      border-radius: 20px;
+      z-index: 2000;
+    }
+
+    /* 상단 상태바 (시간, 자전거 집중모드, 배터리 75%) */
+    .status-bar {
+      height: 48px;
+      padding: 14px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1999;
+    }
+
+    .battery-pill {
+      background-color: #ffd60a;
+      color: #000;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    /* 홈 스크린 (사진 17 배경화면 및 구도 동일) */
+    #home-screen {
+      flex: 1;
+      background: radial-gradient(circle at 50% 30%, #1e262c 0%, #080a0c 80%);
+      padding: 20px 20px 10px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px 14px;
+      margin-top: 35px;
+    }
+
+    .app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .app-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease;
+    }
+
+    .app-item:active .app-icon {
+      transform: scale(0.9);
+    }
+
+    .app-label {
+      color: #fff;
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    /* 하단 검색 타원형 pill */
+    .search-pill {
+      align-self: center;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(15px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    /* 독바 (Dock) */
+    .dock {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(25px);
+      border-radius: 35px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 5px;
+    }
+
+    /* 앱 화면 오버레이 (iOS Zoom-In 애니메이션) */
+    .app-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f2f2f7;
+      z-index: 1500;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.88);
+      transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.22s ease;
+    }
+
+    .app-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .app-header {
+      background: rgba(249, 249, 249, 0.94);
+      backdrop-filter: blur(10px);
+      padding: 50px 16px 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 0.5px solid #c6c6c8;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .app-body {
+      flex: 1;
+      overflow-y: auto;
+      color: #000;
+    }
+
+    /* 하단 홈바 */
+    .home-bar {
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 3000;
+      background: transparent;
+    }
+
+    .home-indicator {
+      width: 135px;
+      height: 5px;
+      background-color: #fff;
+      border-radius: 3px;
+      transition: background-color 0.2s;
+    }
+
+    .in-app .home-indicator {
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="iphone-frame" id="iphone-frame">
+    <div class="dynamic-island"></div>
+
+    <!-- 상단 상태바 -->
+    <div class="status-bar">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span>3:36</span>
+        <i class="fa-solid fa-bicycle" style="font-size: 11px;"></i>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-signal" style="font-size: 12px;"></i>
+        <i class="fa-solid fa-wifi" style="font-size: 12px;"></i>
+        <span class="battery-pill">75</span>
+      </div>
+    </div>
+
+    <!-- 홈 스크린 ([사진 17] 레이아웃 반영) -->
+    <div id="home-screen">
+      <div class="app-grid">
+        <!-- 1행 (가짜 앱 / 진짜 앱 구분) -->
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #fff; color: #000; flex-direction: column; justify-content: center;">
+            <span style="color: #ff3b30; font-size: 9px; font-weight: 700;">월요일</span>
+            <span style="font-size: 22px; font-weight: 600; line-height: 1;">27</span>
+          </div>
+          <span class="app-label">캘린더</span>
+        </div>
+
+        <div class="app-item" onclick="openApp('photos')">
+          <div class="app-icon" style="background: #fff;"><i class="fa-solid fa-images" style="color: #ff2d55;"></i></div>
+          <span class="app-label">사진</span>
+        </div>
+
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: linear-gradient(135deg, #a2a2a2, #565656);"><i class="fa-solid fa-camera"></i></div>
+          <span class="app-label">카메라</span>
+        </div>
+
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #000; border: 1px solid #333;"><i class="fa-regular fa-clock"></i></div>
+          <span class="app-label">시계</span>
+        </div>
+
+        <!-- 2행 -->
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #fff;"><i class="fa-solid fa-note-sticky" style="color: #ffcc00;"></i></div>
+          <span class="app-label">메모</span>
+        </div>
+
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);"><i class="fa-brands fa-instagram"></i></div>
+          <span class="app-label">Instagram</span>
+        </div>
+
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #fff;"><i class="fa-solid fa-language" style="color: #1a73e8;"></i></div>
+          <span class="app-label">Google 번역</span>
+        </div>
+
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #000; color: #e50914; font-weight: 900; font-size: 30px;">N</div>
+          <span class="app-label">Netflix</span>
+        </div>
+      </div>
+
+      <div class="search-pill">
+        <i class="fa-solid fa-magnifying-glass" style="font-size: 10px;"></i>
+        <span>검색</span>
+      </div>
+
+      <!-- 독바 (전화, Safari, 메시지, 설정) -->
+      <div class="dock">
+        <div class="app-item" onclick="openApp('phone')">
+          <div class="app-icon" style="background: #34c759;"><i class="fa-solid fa-phone"></i></div>
+        </div>
+        <div class="app-item" onclick="ignoreClick()">
+          <div class="app-icon" style="background: #fff;"><i class="fa-compass fa-regular" style="color: #007aff;"></i></div>
+        </div>
+        <div class="app-item" onclick="openApp('messages')">
+          <div class="app-icon" style="background: #34c759;"><i class="fa-solid fa-comment"></i></div>
+        </div>
+        <div class="app-item" onclick="openApp('settings')">
+          <div class="app-icon" style="background: #8e8e93;"><i class="fa-solid fa-gear"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 앱 1: 전화 -->
+    <div id="phone" class="app-overlay">
+      <div class="app-header">
+        <span style="font-size: 20px; font-weight: 800;">연락처</span>
+        <i class="fa-solid fa-plus" style="color: #007aff;"></i>
+      </div>
+      <div class="app-body" style="padding: 15px;">
+        <p style="font-weight: bold; margin-bottom: 10px; color: #8e8e93; font-size: 12px;">즐겨찾기</p>
+        <div style="background: #fff; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 600;">유우시 (YUSHI) ⭐</div>
+            <div style="font-size: 12px; color: #8e8e93;">得能勇志</div>
+          </div>
+          <i class="fa-solid fa-phone" style="color: #34c759; font-size: 18px;"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 앱 2: 메시지 -->
+    <div id="messages" class="app-overlay">
+      <div class="app-header">
+        <span style="color: #007aff; cursor: pointer; font-weight: 400;" onclick="closeApp()">‹ 뒤로</span>
+        <span>유우시 (YUSHI)</span>
+        <i class="fa-solid fa-video" style="color: #007aff;"></i>
+      </div>
+      <div class="app-body" style="padding: 15px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="text-align: center; font-size: 11px; color: #8e8e93; margin: 10px 0;">4월 20일 일요일</div>
+        <div style="background: #e9e9eb; padding: 10px 14px; border-radius: 18px; max-width: 70%; align-self: flex-start; font-size: 15px;">료 너무 귀여운거 아니야??ㅎㅎㅎ</div>
+        <div style="background: #007aff; color: #fff; padding: 10px 14px; border-radius: 18px; max-width: 70%; align-self: flex-end; font-size: 15px;">난?</div>
+        <div style="background: #e9e9eb; padding: 10px 14px; border-radius: 18px; max-width: 70%; align-self: flex-start; font-size: 15px;">리쿠 카와</div>
+        <div style="background: #e9e9eb; padding: 10px 14px; border-radius: 18px; max-width: 70%; align-self: flex-start; font-size: 15px;">이요</div>
+      </div>
+    </div>
+
+    <!-- 앱 3: 사진 -->
+    <div id="photos" class="app-overlay">
+      <div class="app-header">
+        <span style="font-size: 20px; font-weight: 800;">보관함</span>
+        <span style="color: #007aff; font-size: 14px;">선택</span>
+      </div>
+      <div class="app-body">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px;">
+          <div style="background: #ddd; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666;">사진 1</div>
+          <div style="background: #ccc; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666;">사진 2</div>
+          <div style="background: #bbb; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666;">사진 3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 앱 4: 설정 -->
+    <div id="settings" class="app-overlay">
+      <div class="app-header">
+        <span style="font-size: 20px; font-weight: 800;">설정</span>
+      </div>
+      <div class="app-body" style="padding: 15px;">
+        <div style="background: #fff; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #007aff; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">陸</div>
+          <div>
+            <div style="font-weight: 600; font-size: 16px;">마에다 리쿠 (前田陸)</div>
+            <div style="font-size: 12px; color: #8e8e93;">Apple ID, iCloud+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 홈바 (클릭 시 앱이 닫힘) -->
+    <div class="home-bar" onclick="closeApp()">
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <script>
+    const frame = document.getElementById('iphone-frame');
+
+    // 자바스크립트 상태 제어로 앱 열기 (URL에 # 안 붙음)
+    function openApp(appId) {
+      document.querySelectorAll('.app-overlay').forEach(overlay => {
+        overlay.classList.remove('active');
+      });
+      const targetApp = document.getElementById(appId);
+      if (targetApp) {
+        targetApp.classList.add('active');
+        frame.classList.add('in-app');
+      }
+    }
+
+    // 앱 닫기 (홈 화면으로 복귀)
+    function closeApp() {
+      document.querySelectorAll('.app-overlay').forEach(overlay => {
+        overlay.classList.remove('active');
+      });
+      frame.classList.remove('in-app');
+    }
+
+    function ignoreClick() {
+      // 가짜 어플은 터치해도 작동하지 않음
+    }
+  </script>
+</body>
+</html>
