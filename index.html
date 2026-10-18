@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RIKU's iPhone</title>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     * {
@@ -31,7 +30,7 @@
       height: 100vh;
       max-width: 414px;
       max-height: 896px;
-      background-color: #000;
+      background-color: #333333; /* 사진 19와 동일한 배경 톤 */
       position: relative;
       overflow: hidden;
       display: flex;
@@ -47,25 +46,11 @@
       }
     }
 
-    /* Dynamic Island */
-    .dynamic-island {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 30px;
-      background-color: #000;
-      border-radius: 20px;
-      z-index: 2000;
-      pointer-events: none;
-    }
-
-    /* 홈 스크린 컨테이너 */
+    /* 홈 스크린 컨테이너 (사진 19 배경색상 적용) */
     #home-screen {
       flex: 1;
-      background: radial-gradient(circle at 50% 30%, #20272d 0%, #08090b 85%);
-      padding: 50px 22px 10px 22px; /* 상단바 제거에 맞춰 여백 조정 */
+      background-color: #333333;
+      padding: 35px 22px 10px 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -85,6 +70,7 @@
       align-items: center;
       gap: 6px;
       cursor: pointer;
+      position: relative;
     }
 
     .app-icon {
@@ -95,7 +81,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
       transition: transform 0.15s ease;
       background-size: cover;
       background-position: center;
@@ -113,25 +99,41 @@
       letter-spacing: -0.2px;
     }
 
-    /* 하단 검색 타원형 버튼 (독바 바로 위 위치) */
+    /* 빨간색 알림 배지 (사진 19 반영) */
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: #ff3b30;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    /* 하단 검색 버튼 ([사진 19]처럼 독바 바로 위로 내림) */
     .search-pill {
       align-self: center;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(110, 110, 115, 0.65);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 6px 16px;
+      padding: 7px 18px;
       border-radius: 20px;
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 12px;
+      color: #fff;
+      font-size: 13px;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 12px; /* 독바 바로 위에 위치하도록 조정 */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    /* 독바 (Dock) */
+    /* 독바 (Dock) ([사진 19] 반투명 스타일) */
     .dock {
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(110, 110, 115, 0.45);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border-radius: 35px;
@@ -141,7 +143,7 @@
       margin-bottom: 5px;
     }
 
-    /* 앱 화면 오버레이 (iOS Zoom-In 애니메이션) */
+    /* 앱 화면 오버레이 */
     .app-overlay {
       position: absolute;
       top: 0;
@@ -182,7 +184,7 @@
       color: #000;
     }
 
-    /* 하단 홈바 (클릭 시 홈 화면으로 이동) */
+    /* 하단 홈바 */
     .home-bar {
       height: 28px;
       display: flex;
@@ -210,97 +212,59 @@
 <body>
 
   <div class="iphone-frame" id="iphone-frame">
-    <!-- Dynamic Island -->
-    <div class="dynamic-island"></div>
-
-    <!-- 홈 스크린 -->
+    <!-- 홈 스크린 ([사진 19] 반영) -->
     <div id="home-screen">
       <div class="app-grid">
-        <!-- 1행 -->
-        <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-calendar" style="flex-direction: column; justify-content: center;">
-            <span style="color: #ff3b30; font-size: 10px; font-weight: 700; margin-top: -2px;">월요일</span>
-            <span style="color: #000; font-size: 24px; font-weight: 500; line-height: 1;">27</span>
-          </div>
-          <span class="app-label">캘린더</span>
-        </div>
-
+        <!-- 1행 (사진, 카메라, 메모) -->
         <div class="app-item" onclick="openApp('photos')">
-          <div class="app-icon" id="icon-photos">
+          <div class="app-icon">
             <i class="fa-solid fa-images" style="color: #ff2d55; font-size: 32px;"></i>
           </div>
           <span class="app-label">사진</span>
         </div>
 
         <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-camera" style="background: #e0e0e0;">
+          <div class="app-icon" style="background: #e0e0e0;">
             <i class="fa-solid fa-camera" style="color: #555; font-size: 30px;"></i>
           </div>
           <span class="app-label">카메라</span>
         </div>
 
         <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-clock" style="background: #000;">
-            <i class="fa-regular fa-clock" style="color: #fff; font-size: 32px;"></i>
-          </div>
-          <span class="app-label">시계</span>
-        </div>
-
-        <!-- 2행 -->
-        <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-notes">
+          <div class="app-icon">
             <i class="fa-solid fa-note-sticky" style="color: #ffcc00; font-size: 32px;"></i>
           </div>
           <span class="app-label">메모</span>
         </div>
-
-        <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-instagram" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%,#d6249f 60%,#285AEB 90%);">
-            <i class="fa-brands fa-instagram" style="color: #fff; font-size: 36px;"></i>
-          </div>
-          <span class="app-label">Instagram</span>
-        </div>
-
-        <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-translate">
-            <i class="fa-solid fa-language" style="color: #1a73e8; font-size: 32px;"></i>
-          </div>
-          <span class="app-label">Google 번역</span>
-        </div>
-
-        <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-netflix" style="background: #000;">
-            <span style="color: #e50914; font-size: 36px; font-weight: 900;">N</span>
-          </div>
-          <span class="app-label">Netflix</span>
-        </div>
       </div>
 
-      <!-- 하단 검색 버튼 -->
+      <!-- 하단 검색 버튼 (독바 바로 위로 위치 이동 완료) -->
       <div class="search-pill">
         <i class="fa-solid fa-magnifying-glass" style="font-size: 11px;"></i>
         <span>검색</span>
       </div>
 
-      <!-- 독바 (전화, Safari, 메시지, 설정) -->
+      <!-- 독바 (전화, Safari, 메시지 [배지 122], 설정 [배지 2]) -->
       <div class="dock">
         <div class="app-item" onclick="openApp('phone')">
-          <div class="app-icon" id="icon-phone" style="background: linear-gradient(180deg, #63e683, #28a745);">
+          <div class="app-icon" style="background: linear-gradient(180deg, #63e683, #28a745);">
             <i class="fa-solid fa-phone" style="color: #fff; font-size: 28px;"></i>
           </div>
         </div>
         <div class="app-item" onclick="ignoreClick()">
-          <div class="app-icon" id="icon-safari">
+          <div class="app-icon">
             <i class="fa-regular fa-compass" style="color: #007aff; font-size: 34px;"></i>
           </div>
         </div>
         <div class="app-item" onclick="openApp('messages')">
-          <div class="app-icon" id="icon-messages" style="background: linear-gradient(180deg, #63e683, #28a745);">
+          <div class="badge">122</div>
+          <div class="app-icon" style="background: linear-gradient(180deg, #63e683, #28a745);">
             <i class="fa-solid fa-comment" style="color: #fff; font-size: 28px;"></i>
           </div>
         </div>
         <div class="app-item" onclick="openApp('settings')">
-          <div class="app-icon" id="icon-settings" style="background: linear-gradient(180deg, #a8a8a8, #6e6e6e);">
+          <div class="badge">2</div>
+          <div class="app-icon" style="background: linear-gradient(180deg, #a8a8a8, #6e6e6e);">
             <i class="fa-solid fa-gear" style="color: #fff; font-size: 32px;"></i>
           </div>
         </div>
@@ -376,7 +340,7 @@
       </div>
     </div>
 
-    <!-- 하단 홈바 (터치 시 홈 화면 복귀) -->
+    <!-- 하단 홈바 -->
     <div class="home-bar" onclick="closeApp()">
       <div class="home-indicator"></div>
     </div>
@@ -385,7 +349,6 @@
   <script>
     const frame = document.getElementById('iphone-frame');
 
-    // 앱 열기
     function openApp(appId) {
       document.querySelectorAll('.app-overlay').forEach(overlay => {
         overlay.classList.remove('active');
@@ -394,12 +357,10 @@
       if (targetApp) {
         targetApp.classList.add('active');
         frame.classList.add('in-app');
-        // 브라우저 뒤로가기 연동
         history.pushState({ appOpen: true }, '');
       }
     }
 
-    // 앱 닫기 (홈 화면으로 복귀)
     function closeApp() {
       document.querySelectorAll('.app-overlay').forEach(overlay => {
         overlay.classList.remove('active');
@@ -407,14 +368,11 @@
       frame.classList.remove('in-app');
     }
 
-    // 모바일 뒤로가기 버튼 처리
     window.addEventListener('popstate', function() {
       closeApp();
     });
 
-    function ignoreClick() {
-      // 가짜 앱 무반응
-    }
+    function ignoreClick() {}
   </script>
 </body>
 </html>
